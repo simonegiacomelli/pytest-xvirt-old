@@ -1,0 +1,10 @@
+site_name: pytest-xvirt
+site_description: A pytest plugin to virtualize test. For example to transparently running them on a remote box.
+site_author: Simone Giacomelli
+
+theme: readthedocs
+
+repo_url: https://github.com/www-py/pytest-xvirt
+
+pages:
+- Home: index.md

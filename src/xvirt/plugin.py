@@ -5,6 +5,8 @@ from pathlib import Path
 
 import pytest
 
+from xvirt.events import EvtCollectionFinish
+
 
 @pytest.hookimpl(trylast=True)
 def pytest_configure(config: pytest.Config):
@@ -39,6 +41,18 @@ def pytest_collection_modifyitems(session, config, items):
     # add the group name to nodeid as suffix if --dist=loadgroup
     pass
     config.hook.pytest_xvirt_setup(config=config)
+
+
+@pytest.hookimpl
+def pytest_collection_finish(session: pytest.Session):
+    event = EvtCollectionFinish([item.nodeid for item in session.items])
+    session.config.hook.pytest_xvirt_controlled_send_event(event=event)
+
+    # self.sendevent(
+    #     "collectionfinish",
+    #     topdir=topdir,
+    #     ids=[item.nodeid for item in session.items],
+    # )
 
 
 @pytest.fixture

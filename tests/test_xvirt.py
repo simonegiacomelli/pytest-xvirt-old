@@ -1,4 +1,35 @@
 # -*- coding: utf-8 -*-
+import json
+from pathlib import Path
+from queue import Queue
+
+from pytest import Pytester
+
+from xvirt.events import EvtCollectionFinish
+from xvirt.remote import RemoteEndpoint
+
+_queue = Queue()
+
+
+def remote_transport_send(payload: bytes) -> None:
+    _queue.put(payload)
+
+
+def test_module_full_name():
+    """just a reminder that __name__ has the full package path :)"""
+    assert __name__ == 'tests.' + Path(__file__).stem
+    assert remote_transport_send.__name__ == ''
+
+
+def test_send_events(pytester: Pytester):
+    # Controlled()
+    target = EvtCollectionFinish(['ciao1', 'ciao2'])
+    string = json.dumps((target, target))
+    assert string == ''
+
+    remote_transport = __name__ + '.' + remote_transport_send.__name__
+
+    # pytester.runpytest_inprocess(f'--xvirt-remote-transport={remote_transport}')
 
 
 def test_bar_fixture(testdir):

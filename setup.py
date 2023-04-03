@@ -44,7 +44,7 @@ setup(
     ],
     entry_points={
         'pytest11': [
-            'xvirt = pytest_xvirt',
+            'xvirt = xvirt.plugin',
         ],
     },
 )

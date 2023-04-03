@@ -7,6 +7,8 @@ import pytest
 
 from xvirt.events import EvtCollectionFinish
 
+mode_controlled = 'controlled'
+
 
 @pytest.hookimpl(trylast=True)
 def pytest_configure(config: pytest.Config):
@@ -24,7 +26,7 @@ def pytest_addhooks(pluginmanager):
 
 
 # raise Exception('got')
-def pytest_addoption(parser):
+def pytest_addoption(parser: pytest.Parser):
     group = parser.getgroup('xvirt')
     group.addoption(
         '--foo',
@@ -32,6 +34,13 @@ def pytest_addoption(parser):
         dest='dest_foo',
         default='2023',
         help='Set the value for the fixture "bar".'
+    )
+    group.addoption(
+        '--xvirt-mode',
+        action='store',
+        dest='xvirt_mode',
+        default='',
+        help=f'Set the mode: controller or {mode_controlled}'
     )
 
     parser.addini('HELLO', 'Dummy pytest.ini setting')
@@ -45,8 +54,9 @@ def pytest_collection_modifyitems(session, config, items):
 
 @pytest.hookimpl
 def pytest_collection_finish(session: pytest.Session):
-    event = EvtCollectionFinish([item.nodeid for item in session.items])
-    session.config.hook.pytest_xvirt_controlled_send_event(event=event)
+    if session.config.option.xvirt_mode == mode_controlled:
+        event = EvtCollectionFinish([item.nodeid for item in session.items])
+        session.config.hook.pytest_xvirt_controlled_send_event(event=event)
 
     # self.sendevent(
     #     "collectionfinish",
